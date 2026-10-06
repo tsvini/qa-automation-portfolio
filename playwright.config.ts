@@ -11,6 +11,12 @@ export default defineConfig({
   testDir,
   fullyParallel: true,
   retries: process.env.CI ? 1 : 0,
+  // testes visuais só rodam no CI (Linux), onde ficam as imagens de referência
+  grepInvert: process.env.CI ? undefined : /@visual/,
+  snapshotPathTemplate: 'snapshots/{arg}-{projectName}-{platform}{ext}',
+  expect: {
+    toHaveScreenshot: { maxDiffPixelRatio: 0.01, animations: 'disabled' },
+  },
   reporter: [
     ['list'],
     ['html', { open: 'never' }],

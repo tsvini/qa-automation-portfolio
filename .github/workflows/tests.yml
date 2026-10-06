@@ -4,6 +4,11 @@ on:
   push:
   pull_request:
   workflow_dispatch:
+    inputs:
+      atualizar_snapshots:
+        description: 'Gerar/atualizar as imagens de referência da regressão visual'
+        type: boolean
+        default: false
   schedule:
     - cron: '0 9 * * *' # todo dia às 06h (horário de Brasília)
 
@@ -18,6 +23,7 @@ concurrency:
 
 jobs:
   testes:
+    if: ${{ !inputs.atualizar_snapshots }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -73,7 +79,7 @@ jobs:
 
   publicar:
     needs: testes
-    if: always() && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+    if: always() && needs.testes.result != 'skipped' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
     runs-on: ubuntu-latest
     environment:
       name: github-pages
@@ -81,3 +87,30 @@ jobs:
     steps:
       - id: deploy
         uses: actions/deploy-pages@v4
+
+  atualizar-snapshots:
+    if: ${{ inputs.atualizar_snapshots }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+
+      - name: Gerar imagens de referência
+        run: npx bddgen && npx playwright test --grep @visual --grep-invert @deteccao --update-snapshots=all
+
+      - name: Commitar imagens de referência
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898333+github-actions[bot]@users.noreply.github.com"
+          git add snapshots
+          git commit -m "chore: atualiza imagens de referência da regressão visual" || echo "Nenhuma imagem mudou"
+          git push
