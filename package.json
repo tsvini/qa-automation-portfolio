@@ -7,6 +7,9 @@
     "test": "bddgen && playwright test",
     "test:ui": "bddgen && playwright test --grep @ui",
     "test:api": "bddgen && playwright test --grep @api",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "check": "npm run lint && npm run typecheck",
     "report": "playwright show-report"
   },
   "repository": {
@@ -23,14 +26,18 @@
   "homepage": "https://github.com/tsvini/qa-automation-portfolio#readme",
   "devDependencies": {
     "@axe-core/playwright": "^4.13.0",
+    "@eslint/js": "^10.0.1",
     "@faker-js/faker": "^10.6.0",
     "@playwright/test": "^1.63.0",
     "@types/node": "^26.6.4",
     "allure-commandline": "^2.46.1",
     "allure-js-commons": "^3.13.0",
     "allure-playwright": "^3.13.0",
+    "eslint": "^10.12.0",
+    "eslint-plugin-playwright": "^2.12.1",
     "playwright-bdd": "^9.2.1",
-    "typescript": "^7.0.2",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.71.1",
     "zod": "^4.6.5"
   }
 }

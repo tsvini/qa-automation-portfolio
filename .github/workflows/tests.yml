@@ -22,8 +22,26 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  testes:
+  qualidade:
+    name: Qualidade de código
     if: ${{ !inputs.atualizar_snapshots }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npx bddgen
+      - name: Lint
+        run: npm run lint
+      - name: Checagem de tipos
+        run: npm run typecheck
+
+  testes:
+    name: Testes (API + Chromium, Firefox e WebKit)
+    needs: qualidade
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -34,7 +52,7 @@ jobs:
           cache: npm
 
       - run: npm ci
-      - run: npx playwright install --with-deps chromium
+      - run: npx playwright install --with-deps
 
       - name: Rodar testes
         run: npm test
@@ -78,6 +96,7 @@ jobs:
           path: allure-report
 
   publicar:
+    name: Publicar Allure no GitHub Pages
     needs: testes
     if: always() && needs.testes.result != 'skipped' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
     runs-on: ubuntu-latest
@@ -89,6 +108,7 @@ jobs:
         uses: actions/deploy-pages@v4
 
   atualizar-snapshots:
+    name: Atualizar imagens de referência
     if: ${{ inputs.atualizar_snapshots }}
     runs-on: ubuntu-latest
     permissions:
@@ -102,7 +122,7 @@ jobs:
           cache: npm
 
       - run: npm ci
-      - run: npx playwright install --with-deps chromium
+      - run: npx playwright install --with-deps
 
       - name: Gerar imagens de referência
         run: npx bddgen && npx playwright test --grep @visual --grep-invert @deteccao --update-snapshots=all

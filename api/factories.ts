@@ -7,7 +7,7 @@ export type Usuario = {
   administrador: 'true' | 'false';
 };
 
-export function criarUsuario(sobrescrever: Partial<Record<keyof Usuario, string>> = {}): Usuario {
+export function criarUsuario(sobrescrever: Record<string, string> = {}): Usuario {
   return {
     nome: faker.person.fullName(),
     email: `qa.${faker.string.alphanumeric(12).toLowerCase()}@qaportfolio.com`,
