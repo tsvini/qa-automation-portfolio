@@ -1,0 +1,17 @@
+[
+  {
+    "name": "Falha de infraestrutura ou timeout",
+    "matchedStatuses": ["failed", "broken"],
+    "messageRegex": ".*(Timeout|timeout|ECONNREFUSED|ENOTFOUND|net::).*"
+  },
+  {
+    "name": "Falha de produto (asserção)",
+    "matchedStatuses": ["failed"],
+    "messageRegex": ".*expect.*"
+  },
+  {
+    "name": "Teste instável (flaky)",
+    "matchedStatuses": ["passed"],
+    "flaky": true
+  }
+]

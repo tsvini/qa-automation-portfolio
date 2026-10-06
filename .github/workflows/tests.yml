@@ -33,6 +33,26 @@ jobs:
       - name: Rodar testes
         run: npm test
 
+      - name: Preparar histórico e metadados do Allure
+        if: always()
+        run: |
+          mkdir -p allure-results/history
+          for f in history.json history-trend.json duration-trend.json categories-trend.json retry-trend.json; do
+            curl -sf "https://tsvini.github.io/qa-automation-portfolio/history/$f" -o "allure-results/history/$f" || rm -f "allure-results/history/$f"
+          done
+          cp categories.json allure-results/categories.json
+          cat > allure-results/executor.json <<EOF
+          {
+            "name": "GitHub Actions",
+            "type": "github",
+            "url": "${{ github.server_url }}/${{ github.repository }}",
+            "buildOrder": ${{ github.run_number }},
+            "buildName": "Execução #${{ github.run_number }}",
+            "buildUrl": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+            "reportUrl": "https://tsvini.github.io/qa-automation-portfolio/"
+          }
+          EOF
+
       - name: Gerar Allure Report
         if: always()
         run: npx allure-commandline generate allure-results --clean -o allure-report
