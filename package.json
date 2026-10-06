@@ -1,0 +1,30 @@
+{
+  "name": "qa-automation-portfolio",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+    "scripts": {
+    "test": "bddgen && playwright test",
+    "test:ui": "bddgen && playwright test --grep @ui",
+    "test:api": "bddgen && playwright test --grep @api",
+    "report": "playwright show-report"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tsvini/qa-automation-portfolio.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/tsvini/qa-automation-portfolio/issues"
+  },
+  "homepage": "https://github.com/tsvini/qa-automation-portfolio#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.63.0",
+    "@types/node": "^26.6.4",
+    "playwright-bdd": "^9.2.1",
+    "typescript": "^7.0.2"
+  }
+}
