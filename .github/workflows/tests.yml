@@ -4,6 +4,17 @@ on:
   push:
   pull_request:
   workflow_dispatch:
+  schedule:
+    - cron: '0 9 * * *' # todo dia às 06h (horário de Brasília)
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
 
 jobs:
   testes:
@@ -18,11 +29,35 @@ jobs:
 
       - run: npm ci
       - run: npx playwright install --with-deps chromium
-      - run: npm test
 
-      - uses: actions/upload-artifact@v4
+      - name: Rodar testes
+        run: npm test
+
+      - name: Gerar Allure Report
         if: always()
+        run: npx allure-commandline generate allure-results --clean -o allure-report
+
+      - name: Guardar relatório do Playwright
+        if: always()
+        uses: actions/upload-artifact@v4
         with:
           name: playwright-report
           path: playwright-report
           retention-days: 14
+
+      - name: Preparar publicação no Pages
+        if: always() && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: allure-report
+
+  publicar:
+    needs: testes
+    if: always() && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - id: deploy
+        uses: actions/deploy-pages@v4

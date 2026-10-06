@@ -1,3 +1,5 @@
+![Testes](https://github.com/tsvini/qa-automation-portfolio/actions/workflows/tests.yml/badge.svg)
+
 # QA Automation Portfolio
 
 Projeto de automação de testes com **Playwright + Cucumber (BDD)** em TypeScript, cobrindo testes de UI e de API, rodando no GitHub Actions a cada push.

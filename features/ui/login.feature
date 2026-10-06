@@ -17,7 +17,7 @@ Funcionalidade: Login no SauceDemo
     Então vejo a mensagem de erro "<mensagem>"
 
     Exemplos:
-      | usuario         | senha        | mensagem                                                                  |
-      | locked_out_user | secret_sauce | Epic sadface: Sorry, this user has been locked out.                       |
-      | standard_user   | errada       | Epic sadface: Username and password do not match any user in this service |
-      |                 | secret_sauce | Epic sadface: Username is required                                        |
+      | caso              | usuario         | senha        | mensagem                                                                  |
+      | usuário bloqueado | locked_out_user | secret_sauce | Epic sadface: Sorry, this user has been locked out.                       |
+      | senha incorreta   | standard_user   | errada       | Epic sadface: Username and password do not match any user in this service |
+      | usuário em branco |                 | secret_sauce | Epic sadface: Username is required                                        |
