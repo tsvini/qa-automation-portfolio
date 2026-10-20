@@ -32,6 +32,8 @@ export default defineConfig({
   },
   reporter: [
     ['list'],
+    // no CI, cada falha vira uma anotação no resumo da execução
+    ...(CI ? [['github'] as ['github']] : []),
     ['json', { outputFile: 'resultados/testes.json' }],
     ['html', { open: 'never' }],
     [
