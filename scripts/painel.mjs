@@ -94,6 +94,12 @@ const barrasPerf = perf ? Object.entries(perf.p95).map(([rota, ms]) => {
 const html = `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Painel de Qualidade · PixBank</title>
 <meta name="description" content="Painel de qualidade ao vivo do PixBank: testes em todas as camadas, caça aos bugs e performance.">
+<meta property="og:title" content="Painel de Qualidade · PixBank">
+<meta property="og:description" content="${soma.ok}/${soma.total} cenários aprovados · bugs plantados detectados ${bugs ? `${bugs.detectados}/${bugs.total}` : '—'} · Pix sob carga ${perf ? perf.p95.pix : '—'} ms (p95)">
+<meta property="og:image" content="https://tsvini.github.io/qa-automation-portfolio/og.png">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta property="og:url" content="https://tsvini.github.io/qa-automation-portfolio/">
+<meta name="twitter:card" content="summary_large_image">
 <style>
 :root{--fundo:#0b0f17;--cartao:#121826;--borda:#232b3d;--texto:#e8ecf3;--suave:#93a0b8;--verde:#32d6a5;--azul:#4f8cff;--vermelho:#ff6b6b;--amarelo:#ffd166}
 *{box-sizing:border-box}body{margin:0;background:radial-gradient(1000px 500px at 85% -10%,#1b2a44 0,transparent 60%),var(--fundo);color:var(--texto);font:15px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}

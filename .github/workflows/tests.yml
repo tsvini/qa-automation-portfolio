@@ -158,10 +158,12 @@ jobs:
             "reportUrl": "${{ env.SITE }}/allure/"
           }
           EOF
+      - run: npx playwright install --with-deps chromium
       - name: Gerar Allure e Painel
         run: |
           npx allure-commandline generate allure-results --clean -o painel-dist/allure
           node scripts/painel.mjs
+          node scripts/og-image.mjs
       - if: github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
         uses: actions/upload-pages-artifact@v3
         with: { path: painel-dist }
