@@ -4,3 +4,5 @@ playwright-report/
 test-results/
 allure-results/
 allure-report/
+resultados/
+painel-dist/

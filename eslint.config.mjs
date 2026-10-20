@@ -1,6 +1,7 @@
 import js from '@eslint/js';
 import tseslint from 'typescript-eslint';
 import playwright from 'eslint-plugin-playwright';
+import globals from 'globals';
 
 export default tseslint.config(
   {
@@ -11,12 +12,26 @@ export default tseslint.config(
       'test-results',
       'allure-results',
       'allure-report',
+      'painel-dist',
     ],
   },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
-    files: ['steps/**/*.ts', 'pages/**/*.ts'],
+    // front-end do PixBank roda no navegador; k6 e scripts têm seus próprios globais
+    files: ['app/web/**/*.js'],
+    languageOptions: { globals: globals.browser, sourceType: 'script' },
+  },
+  {
+    files: ['perf/**/*.js'],
+    languageOptions: { globals: { __ENV: 'readonly', __VU: 'readonly' } },
+  },
+  {
+    files: ['scripts/**/*.mjs'],
+    languageOptions: { globals: globals.node },
+  },
+  {
+    files: ['steps/**/*.ts', 'pages/**/*.ts', 'pixbank/**/*.ts'],
     ...playwright.configs['flat/recommended'],
   },
   {

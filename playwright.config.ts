@@ -1,7 +1,10 @@
 import { defineConfig, devices } from '@playwright/test';
 import { defineBddConfig } from 'playwright-bdd';
+import { PIXBANK_URL } from './pixbank/config';
 
 const CI = !!process.env.CI;
+// SO_PIXBANK=1 roda só a aplicação própria (usado na "caça aos bugs", que não precisa das suítes externas).
+const SO_PIXBANK = !!process.env.SO_PIXBANK;
 
 const testDir = defineBddConfig({
   features: 'features/**/*.feature',
@@ -29,6 +32,7 @@ export default defineConfig({
   },
   reporter: [
     ['list'],
+    ['json', { outputFile: 'resultados/testes.json' }],
     ['html', { open: 'never' }],
     [
       'allure-playwright',
@@ -37,7 +41,7 @@ export default defineConfig({
         detail: false,
         suiteTitle: false,
         environmentInfo: {
-          Projeto: 'QA Automation Portfolio',
+          Projeto: 'QA Automation Portfolio · PixBank',
           Autor: 'Vinícius Torales',
           Navegadores: CI ? 'Chromium, Firefox, WebKit' : 'Chromium, Firefox',
           Node: process.version,
@@ -54,25 +58,62 @@ export default defineConfig({
     video: CI ? 'on' : 'retain-on-failure',
     screenshot: 'on',
   },
+  // Sobe o PixBank automaticamente antes dos testes (o BUG da variável de ambiente é repassado para a "caça aos bugs").
+  webServer: {
+    command: 'npm run pixbank',
+    url: `${PIXBANK_URL}/api/saude`,
+    reuseExistingServer: !CI,
+    timeout: 60_000,
+    env: { TZ: 'America/Sao_Paulo', BUG: process.env.BUG || '', PORT: new URL(PIXBANK_URL).port || '3000' },
+  },
   projects: [
-    { name: 'api', grep: /@api/ },
-    { name: 'chromium', grep: /@ui/, use: { ...devices['Desktop Chrome'] } },
+    // ---------- PixBank: aplicação própria ----------
+    { name: 'pixbank-api', grep: /@pixbank.*@api|@api.*@pixbank/ },
     {
-      name: 'firefox',
-      grep: /@ui/,
+      name: 'pixbank-chromium',
+      grep: /@pixbank.*@ui|@ui.*@pixbank/,
+      grepInvert: ignorarLocalmente,
+      // CHROMIUM_PATH permite usar um Chromium já instalado na máquina (ex.: containers sem download de browsers)
+      use: { ...devices['Desktop Chrome'], ...(process.env.CHROMIUM_PATH ? { launchOptions: { executablePath: process.env.CHROMIUM_PATH } } : {}) },
+    },
+    {
+      name: 'pixbank-firefox',
+      grep: /@pixbank.*@ui|@ui.*@pixbank/,
       grepInvert: ignorarForaDoChromium,
       use: { ...devices['Desktop Firefox'] },
     },
-    // WebKit no Windows exige DLLs extras; roda apenas no CI (Linux).
     ...(CI
       ? [
           {
-            name: 'webkit',
-            grep: /@ui/,
+            name: 'pixbank-webkit',
+            grep: /@pixbank.*@ui|@ui.*@pixbank/,
             grepInvert: ignorarForaDoChromium,
             use: { ...devices['Desktop Safari'] },
           },
         ]
       : []),
+    // ---------- SauceDemo e ServeRest: suítes de referência ----------
+    ...(SO_PIXBANK
+      ? []
+      : [
+          { name: 'api', grep: /@api/, grepInvert: [/@pixbank/] },
+          { name: 'chromium', grep: /@ui/, grepInvert: [/@pixbank/, ...ignorarLocalmente], use: { ...devices['Desktop Chrome'] } },
+          {
+            name: 'firefox',
+            grep: /@ui/,
+            grepInvert: [/@pixbank/, ...ignorarForaDoChromium],
+            use: { ...devices['Desktop Firefox'] },
+          },
+          ...(CI
+            ? [
+                {
+                  name: 'webkit',
+                  grep: /@ui/,
+                  grepInvert: [/@pixbank/, ...ignorarForaDoChromium],
+                  use: { ...devices['Desktop Safari'] },
+                },
+              ]
+            : []),
+        ]),
   ],
 });

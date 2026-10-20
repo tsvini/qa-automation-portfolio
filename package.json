@@ -1,7 +1,7 @@
 {
   "name": "qa-automation-portfolio",
   "version": "1.0.0",
-  "description": "",
+  "description": "Estratégia de testes completa: um banco digital próprio (PixBank) testado em todas as camadas, mais suítes de referência em SauceDemo e ServeRest",
   "main": "index.js",
   "scripts": {
     "test": "bddgen && playwright test",
@@ -10,7 +10,11 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "check": "npm run lint && npm run typecheck",
-    "report": "playwright show-report"
+    "report": "playwright show-report",
+    "pixbank": "tsx app/server.ts",
+    "test:pixbank": "bddgen && SO_PIXBANK=1 playwright test --project='pixbank-*'",
+    "test:perf": "k6 run perf/pix.k6.js",
+    "cacar-bugs": "node scripts/cacar-bugs.mjs"
   },
   "repository": {
     "type": "git",
@@ -28,6 +32,7 @@
     "@axe-core/playwright": "^4.13.0",
     "@eslint/js": "^10.0.1",
     "@faker-js/faker": "^10.6.0",
+    "@fastify/static": "^8.3.0",
     "@playwright/test": "^1.63.0",
     "@types/node": "^26.6.4",
     "allure-commandline": "^2.46.1",
@@ -35,9 +40,13 @@
     "allure-playwright": "^3.13.0",
     "eslint": "^10.12.0",
     "eslint-plugin-playwright": "^2.12.1",
+    "fastify": "^5.12.7",
+    "globals": "^17.13.0",
     "playwright-bdd": "^9.2.1",
+    "tsx": "^4.23.15",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.71.1",
+    "wait-on": "^9.5.1",
     "zod": "^4.6.5"
   }
 }

@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PixBank</title>
+  <link rel="stylesheet" href="estilo.css">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%2332d6a5'/%3E%3C/svg%3E">
+</head>
+<body>
+  <main id="app">
+    <section id="tela-login" class="tela" aria-labelledby="titulo-login">
+      <div class="marca"><span class="logo" aria-hidden="true"></span>PixBank</div>
+      <h1 id="titulo-login">Entrar na sua conta</h1>
+      <form id="form-login" novalidate>
+        <label for="email">E-mail</label>
+        <input id="email" name="email" type="email" autocomplete="username" data-test="email" required>
+        <label for="senha">Senha</label>
+        <input id="senha" name="senha" type="password" autocomplete="current-password" data-test="senha" required>
+        <p class="erro" id="erro-login" role="alert" data-test="erro-login"></p>
+        <button type="submit" data-test="entrar">Entrar</button>
+      </form>
+      <p class="dica">Conta de demonstração: <strong>ana@pixbank.dev</strong> · <strong>Senha@123</strong></p>
+    </section>
+
+    <section id="tela-conta" class="tela" hidden aria-labelledby="ola">
+      <header class="topo">
+        <div class="marca"><span class="logo" aria-hidden="true"></span>PixBank</div>
+        <button class="link" id="sair" data-test="sair">Sair</button>
+      </header>
+      <h1 id="ola" data-test="ola"></h1>
+
+      <div class="cartoes">
+        <article class="cartao saldo">
+          <h2>Saldo disponível</h2>
+          <p class="valor" data-test="saldo" id="saldo">—</p>
+        </article>
+        <article class="cartao">
+          <h2>Limite diário de Pix</h2>
+          <div class="barra" role="progressbar" aria-label="Limite diário usado" id="barra-limite" aria-valuemin="0" aria-valuemax="100"><span></span></div>
+          <p class="sub"><span data-test="limite-restante" id="limite-restante">—</span> disponíveis hoje</p>
+          <p class="aviso" id="noturno" data-test="aviso-noturno" hidden>🌙 Período noturno: até R$ 1.000,00 por Pix</p>
+        </article>
+      </div>
+
+      <article class="cartao">
+        <h2>Enviar Pix</h2>
+        <form id="form-pix" novalidate>
+          <label for="chave">Chave Pix (e-mail ou CPF)</label>
+          <input id="chave" name="chave" data-test="chave" required>
+          <label for="valor" id="rotulo-valor">Valor (R$)</label>
+          <input id="valor" name="valor" inputmode="decimal" placeholder="0,00" data-test="valor" required>
+          <label for="descricao">Descrição (opcional)</label>
+          <input id="descricao" name="descricao" maxlength="140" data-test="descricao">
+          <button type="submit" data-test="enviar-pix">Enviar Pix</button>
+        </form>
+        <div id="resultado" role="status" aria-live="polite" data-test="resultado-pix"></div>
+      </article>
+
+      <article class="cartao">
+        <h2>Extrato</h2>
+        <ul id="extrato" data-test="extrato" class="extrato"></ul>
+        <p class="vazio" id="extrato-vazio" data-test="extrato-vazio" hidden>Nenhuma movimentação ainda.</p>
+      </article>
+    </section>
+  </main>
+
+  <dialog id="dialogo-confirmar" aria-labelledby="titulo-confirmar" data-test="dialogo-confirmar">
+    <form method="dialog" id="form-confirmar">
+      <h2 id="titulo-confirmar">Confirme o Pix</h2>
+      <p>Pix acima de R$ 2.000,00 precisa da sua senha. Valor: <strong id="valor-confirmar"></strong></p>
+      <label for="senha-confirmar">Senha</label>
+      <input id="senha-confirmar" type="password" data-test="senha-confirmar" autocomplete="current-password">
+      <p class="erro" id="erro-confirmar" role="alert" data-test="erro-confirmar"></p>
+      <div class="acoes">
+        <button type="button" class="secundario" id="cancelar-confirmar">Cancelar</button>
+        <button type="submit" data-test="confirmar-pix">Confirmar</button>
+      </div>
+    </form>
+  </dialog>
+  <script src="app.js"></script>
+</body>
+</html>
