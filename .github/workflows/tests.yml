@@ -28,7 +28,7 @@ jobs:
   qualidade:
     name: Qualidade de código
     if: ${{ !inputs.atualizar_snapshots }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -43,7 +43,7 @@ jobs:
   testes:
     name: Testes (PixBank + referência, 3 navegadores)
     needs: qualidade
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -72,7 +72,7 @@ jobs:
   caca-aos-bugs:
     name: 'Caça aos bugs: ${{ matrix.bug }}'
     needs: qualidade
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
@@ -88,7 +88,7 @@ jobs:
         env:
           PROJETOS: pixbank-api,pixbank-chromium
       - if: always()
-        run: mv resultados/caca-aos-bugs.json resultados/bug-${{ matrix.bug }}.json
+        run: mv resultados/caca-aos-bugs.json resultados/bug-${{ matrix.bug }}.json 2>/dev/null || true
       - if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -99,7 +99,7 @@ jobs:
   performance:
     name: Performance (k6)
     needs: qualidade
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -123,7 +123,7 @@ jobs:
     name: Painel de Qualidade + Allure
     needs: [testes, caca-aos-bugs, performance]
     if: always() && needs.testes.result != 'skipped'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -172,7 +172,7 @@ jobs:
     name: Publicar no GitHub Pages
     needs: painel
     if: always() && needs.painel.result == 'success' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     environment:
       name: github-pages
       url: ${{ steps.deploy.outputs.page_url }}
@@ -183,7 +183,7 @@ jobs:
   atualizar-snapshots:
     name: Atualizar imagens de referência
     if: ${{ inputs.atualizar_snapshots }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: write
     steps:
